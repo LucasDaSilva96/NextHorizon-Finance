@@ -2,7 +2,7 @@ import HeaderBox from '@/components/HeaderBox';
 import RightSideBar from '@/components/RightSideBar';
 import TotalBalanceBox from '@/components/TotalBalanceBox';
 import { getLoggedInUser } from '@/lib/actions/user.actions';
-import { redirect, useRouter } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import React from 'react';
 
 export default async function HomePage() {
