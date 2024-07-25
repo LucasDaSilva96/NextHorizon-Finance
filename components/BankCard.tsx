@@ -13,9 +13,7 @@ export default function BankCard({
       <Link href='/' className='bank-card'>
         <div className='bank-card_content'>
           <div>
-            <h1 className='text-16 font-semibold text-slate-50'>
-              {account.name || userName}
-            </h1>
+            <h1 className='text-16 font-semibold text-slate-50'>{userName}</h1>
             <p className='font-ibm-plex-serif font-black text-slate-50'>
               {formatAmount(account.currentBalance || 1236.45)}
             </p>

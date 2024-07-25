@@ -12,6 +12,9 @@ import { z } from 'zod';
 import CustomInput from './CustomInput';
 import { formSchema } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { signIn, signUp } from '@/lib/actions/user.actions';
+import { toast } from 'react-toastify';
 
 export default function AuthForm({ type }: { type: 'sign-in' | 'sign-up' }) {
   const FORM_SCHEMA = formSchema(type);
@@ -20,8 +23,6 @@ export default function AuthForm({ type }: { type: 'sign-in' | 'sign-up' }) {
   const form = useForm<z.infer<typeof FORM_SCHEMA>>({
     resolver: zodResolver(FORM_SCHEMA),
     defaultValues: {
-      email: '',
-      password: '',
       firstName: '',
       lastName: '',
       address1: '',
@@ -30,19 +31,51 @@ export default function AuthForm({ type }: { type: 'sign-in' | 'sign-up' }) {
       postalCode: '',
       dateOfBirth: '',
       ssn: '',
+      email: '',
+      password: '',
     },
   });
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setLoading] = useState(false);
+  const router = useRouter();
 
   // 2. Define a submit handler.
-  async function onSubmit(values: z.infer<typeof FORM_SCHEMA>) {
+  async function onSubmit(data: z.infer<typeof FORM_SCHEMA>) {
     setLoading(true);
     try {
-      // Your submission logic
-      console.log(values);
+      if (type === 'sign-up') {
+        if (
+          !data.dateOfBirth ||
+          !data.ssn ||
+          !data.address1 ||
+          !data.city ||
+          !data.state ||
+          !data.postalCode ||
+          !data.firstName ||
+          !data.lastName
+        ) {
+          throw new Error('Please fill in all fields');
+        }
+
+        const newUser = await signUp(data);
+        setUser(newUser);
+        if (newUser) {
+          router.push('/sign-in');
+        }
+      }
+
+      if (type === 'sign-in') {
+        const response = await signIn(data.email, data.password);
+        setUser(user);
+        if (response) {
+          router.push('/');
+        }
+      }
     } catch (error) {
+      error instanceof Error
+        ? toast.error(error.message)
+        : toast.error('Submission error');
       console.error('Submission error:', error);
     } finally {
       setLoading(false);
@@ -59,7 +92,7 @@ export default function AuthForm({ type }: { type: 'sign-in' | 'sign-up' }) {
             alt='Horizon logo'
           />
           <h1 className='text-26 font-ibm-plex-serif font-bold text-black-1'>
-            Horizon
+            NextHorizon
           </h1>
         </Link>
 
