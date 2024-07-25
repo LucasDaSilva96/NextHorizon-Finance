@@ -5,13 +5,13 @@ import { Control, FieldPath } from 'react-hook-form';
 import { z } from 'zod';
 import { formSchema } from '@/lib/utils';
 
+const FORM_SCHEMA = formSchema('sign-up');
+
 interface CustomInputProps {
-  control: Control<z.infer<typeof formSchema>>;
-  name: FieldPath<z.infer<typeof formSchema>>;
+  control: Control<z.infer<typeof FORM_SCHEMA>>;
+  name: FieldPath<z.infer<typeof FORM_SCHEMA>>;
   placeholder: string;
   label: string;
-  type: string;
-  autocomplete: 'true' | 'false';
 }
 
 export default function CustomInput({
@@ -19,9 +19,30 @@ export default function CustomInput({
   name,
   placeholder,
   label,
-  type,
-  autocomplete,
 }: CustomInputProps) {
+  const autoComplete =
+    name === 'password'
+      ? 'password'
+      : name === 'email'
+      ? 'email'
+      : name === 'address1'
+      ? 'address-level1'
+      : name === 'firstName'
+      ? 'given-name'
+      : name === 'lastName'
+      ? 'family-name'
+      : name === 'city'
+      ? 'address-level2'
+      : name === 'state'
+      ? 'address-level1'
+      : name === 'postalCode'
+      ? 'address-level2'
+      : name === 'dateOfBirth'
+      ? 'bday'
+      : name === 'ssn'
+      ? 'text'
+      : 'text';
+
   return (
     <FormField
       control={control}
@@ -34,10 +55,10 @@ export default function CustomInput({
           <div className='flex w-full flex-col'>
             <FormControl id={name}>
               <Input
-                type={type}
+                type={name === 'password' ? 'password' : 'text'}
                 placeholder={placeholder}
                 className='input-class'
-                autoComplete={autocomplete}
+                autoComplete='a'
                 {...field}
               />
             </FormControl>
