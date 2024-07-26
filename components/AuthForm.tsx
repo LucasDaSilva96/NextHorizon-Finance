@@ -60,9 +60,7 @@ export default function AuthForm({ type }: { type: 'sign-in' | 'sign-up' }) {
 
         const newUser = await signUp(data);
         setUser(newUser);
-        if (newUser) {
-          router.push('/sign-in');
-        }
+        toast.success('Account created successfully!');
       }
 
       if (type === 'sign-in') {
