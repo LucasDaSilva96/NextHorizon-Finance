@@ -28,6 +28,11 @@ export const createFundingSource = async (
   options: CreateFundingSourceOptions
 ) => {
   try {
+    const res = await dwollaClient.post(
+      `customers/${options.customerId}/funding-sources`,
+      { name: options.fundingSourceName, plaidToken: options.plaidToken }
+    );
+
     return await dwollaClient
       .post(`customers/${options.customerId}/funding-sources`, {
         name: options.fundingSourceName,
@@ -35,7 +40,8 @@ export const createFundingSource = async (
       })
       .then((res) => res.headers.get('location'));
   } catch (err) {
-    console.error('Creating a Funding Source Failed: ', err);
+    console.error(err);
+    throw new Error('Creating a Funding Source Failed');
   }
 };
 
@@ -47,7 +53,8 @@ export const createOnDemandAuthorization = async () => {
     const authLink = onDemandAuthorization.body._links;
     return authLink;
   } catch (err) {
-    console.error('Creating an On Demand Authorization Failed: ', err);
+    console.error(err);
+    throw new Error('Creating an On Demand Authorization Failed');
   }
 };
 
@@ -59,15 +66,20 @@ export const createDwollaCustomer = async (
       .post('customers', newCustomer)
       .then((res) => res.headers.get('location'));
   } catch (err) {
-    console.error('Creating a Dwolla Customer Failed: ', err);
+    console.error(err);
+    throw new Error('Creating a Dwolla Customer Failed');
   }
 };
 
+// TODO Debug this function
 export const createTransfer = async ({
   sourceFundingSourceUrl,
   destinationFundingSourceUrl,
   amount,
 }: TransferParams) => {
+  // Ensure amount is a number
+  const transferAmount = Number(amount);
+
   try {
     const requestBody = {
       _links: {
@@ -80,14 +92,16 @@ export const createTransfer = async ({
       },
       amount: {
         currency: 'USD',
-        value: amount,
+        value: transferAmount,
       },
     };
+
     return await dwollaClient
       .post('transfers', requestBody)
       .then((res) => res.headers.get('location'));
   } catch (err) {
-    console.error('Transfer fund failed: ', err);
+    console.log(err);
+    throw new Error('Transfer fund failed');
   }
 };
 
@@ -109,6 +123,7 @@ export const addFundingSource = async ({
     };
     return await createFundingSource(fundingSourceOptions);
   } catch (err) {
-    console.error('Transfer fund failed: ', err);
+    console.error(err);
+    throw new Error('Adding a Funding Source Failed');
   }
 };

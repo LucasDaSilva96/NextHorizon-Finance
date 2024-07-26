@@ -1,5 +1,4 @@
 'use client';
-'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
@@ -9,7 +8,6 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 import { createTransfer } from '@/lib/actions/dwolla.actions';
-import { createTransaction } from '@/lib/actions/transaction.actions';
 import { getBank, getBankByAccountId } from '@/lib/actions/user.actions';
 import { decryptId } from '@/lib/utils';
 
@@ -26,6 +24,7 @@ import {
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { BankDropdown } from './BankDropdown';
+import { createTransaction } from '@/lib/actions/transaction.actions';
 
 const formSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -58,6 +57,7 @@ const PaymentTransferForm = ({ accounts }: PaymentTransferFormProps) => {
       const receiverBank = await getBankByAccountId({
         accountId: receiverAccountId,
       });
+
       const senderBank = await getBank({ documentId: data.senderBank });
 
       const transferParams = {
@@ -65,8 +65,10 @@ const PaymentTransferForm = ({ accounts }: PaymentTransferFormProps) => {
         destinationFundingSourceUrl: receiverBank.fundingSourceUrl,
         amount: data.amount,
       };
+
       // create transfer
       const transfer = await createTransfer(transferParams);
+   
 
       // create transfer transaction
       if (transfer) {
