@@ -15,6 +15,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { signIn, signUp } from '@/lib/actions/user.actions';
 import { toast } from 'react-toastify';
+import PlaidLink from './PlaidLink';
 
 export default function AuthForm({ type }: { type: 'sign-in' | 'sign-up' }) {
   const FORM_SCHEMA = formSchema(type);
@@ -61,6 +62,7 @@ export default function AuthForm({ type }: { type: 'sign-in' | 'sign-up' }) {
         const newUser = await signUp(data);
         setUser(newUser);
         toast.success('Account created successfully!');
+        return;
       }
 
       if (type === 'sign-in') {
@@ -68,6 +70,7 @@ export default function AuthForm({ type }: { type: 'sign-in' | 'sign-up' }) {
         setUser(user);
         if (response) {
           router.push('/');
+          return;
         }
       }
     } catch (error) {
@@ -106,7 +109,9 @@ export default function AuthForm({ type }: { type: 'sign-in' | 'sign-up' }) {
         </div>
       </header>
       {user ? (
-        <div className='flex flex-col gap-4'>{/* PlaidLink */}</div>
+        <div className='flex flex-col gap-4'>
+          <PlaidLink user={user!} variant='primary' />
+        </div>
       ) : (
         <>
           <Form {...form}>

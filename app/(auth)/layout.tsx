@@ -1,6 +1,5 @@
 import { getLoggedInUser } from '@/lib/actions/user.actions';
 import Image from 'next/image';
-import { redirect } from 'next/navigation';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 export default async function RootLayout({
@@ -9,10 +8,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const loggedIn = await getLoggedInUser();
-
-  if (loggedIn) {
-    return redirect('/');
-  }
 
   return (
     <main className='flex min-h-screen w-full justify-between font-inter'>
