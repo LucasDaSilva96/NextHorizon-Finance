@@ -28,11 +28,6 @@ export const createFundingSource = async (
   options: CreateFundingSourceOptions
 ) => {
   try {
-    const res = await dwollaClient.post(
-      `customers/${options.customerId}/funding-sources`,
-      { name: options.fundingSourceName, plaidToken: options.plaidToken }
-    );
-
     return await dwollaClient
       .post(`customers/${options.customerId}/funding-sources`, {
         name: options.fundingSourceName,
@@ -80,6 +75,14 @@ export const createTransfer = async ({
   // Ensure amount is a number
   const transferAmount = Number(amount);
 
+  if (isNaN(transferAmount) || transferAmount <= 0) {
+    throw new Error('Invalid amount provided');
+  }
+
+  if (!sourceFundingSourceUrl || !destinationFundingSourceUrl) {
+    throw new Error('Source or destination URL is missing');
+  }
+
   try {
     const requestBody = {
       _links: {
@@ -92,15 +95,20 @@ export const createTransfer = async ({
       },
       amount: {
         currency: 'USD',
-        value: transferAmount,
+        value: transferAmount.toFixed(2), // Ensure the amount is formatted correctly
       },
     };
 
-    return await dwollaClient
-      .post('transfers', requestBody)
-      .then((res) => res.headers.get('location'));
+    const response = await dwollaClient.post('transfers', requestBody);
+    const location = response.headers.get('location');
+
+    if (!location) {
+      throw new Error('Transfer location not found in response');
+    }
+
+    return location;
   } catch (err) {
-    console.log(err);
+    console.error('Error creating transfer:', err);
     throw new Error('Transfer fund failed');
   }
 };

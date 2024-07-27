@@ -57,7 +57,7 @@ export default async function HomePage({
 
       <RightSideBar
         user={loggedIn}
-        transactions={accounts?.data?.transactions}
+        transactions={account?.transactions}
         banks={accounts?.data?.slice(0, 2)}
       />
     </section>

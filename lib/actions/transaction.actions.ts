@@ -14,6 +14,7 @@ export const createTransaction = async (
   try {
     const { database } = await createAdminClient();
 
+
     const newTransaction = await database.createDocument(
       DATABASE_ID!,
       TRANSACTION_COLLECTION_ID!,

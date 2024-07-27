@@ -41,6 +41,31 @@ export default function AuthForm({ type }: { type: 'sign-in' | 'sign-up' }) {
   const [isLoading, setLoading] = useState(false);
   const router = useRouter();
 
+  const demoUser = {
+    email: process.env.NEXT_PUBLIC_EMAIL!,
+    password: process.env.NEXT_PUBLIC_PASSWORD!,
+  };
+
+  const singInDemo = async () => {
+    setLoading(true);
+    try {
+      const response = await signIn(demoUser.email, demoUser.password);
+      setUser(user);
+      if (response) {
+        router.push('/');
+        toast.success('Signed in successfully!');
+        return;
+      }
+    } catch (error) {
+      error instanceof Error
+        ? toast.error(error.message)
+        : toast.error('Submission error');
+      console.error('Submission error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // 2. Define a submit handler.
   async function onSubmit(data: z.infer<typeof FORM_SCHEMA>) {
     setLoading(true);
@@ -70,6 +95,7 @@ export default function AuthForm({ type }: { type: 'sign-in' | 'sign-up' }) {
         setUser(user);
         if (response) {
           router.push('/');
+          toast.success('Signed in successfully!');
           return;
         }
       }
@@ -205,6 +231,23 @@ export default function AuthForm({ type }: { type: 'sign-in' | 'sign-up' }) {
               </div>
             </form>
           </Form>
+          {type === 'sign-in' && (
+            <Button
+              type='button'
+              onClick={singInDemo}
+              disabled={isLoading}
+              className='form-btn'
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 size={20} className='animate-spin' /> &nbsp;
+                  Loading...
+                </>
+              ) : (
+                'Sign In with Demo Account'
+              )}
+            </Button>
+          )}
 
           <footer className='flex justify-center gap-1'>
             <p className='text-14 font-normal text-gray-600'>

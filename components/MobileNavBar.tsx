@@ -5,6 +5,7 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
+  SheetDescription,
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
@@ -32,6 +33,9 @@ export default function MobileNavBar({ user }: MobileNavProps) {
         </SheetTrigger>
         <SheetContent side='left' className='border-none bg-slate-50'>
           <SheetTitle className='hidden'>Navbar</SheetTitle>
+          <SheetDescription className='hidden'>
+            This is the mobile navigation bar
+          </SheetDescription>
           <Link
             href='/'
             className='
